@@ -1,18 +1,14 @@
 // Pin Definitions
-#define ENA 3 // PWM control for motor 1
-#define IN1 4 // Direction control for motor 1
-#define IN2 5 // Direction control for motor 1
-#define ENB 6 // PWM control for motor 2
-#define IN3 7 // Direction control for motor 2
-#define IN4 8 // Direction control for motor 2
+#define ENA 6 // PWM control for motor 1
+#define IN1 8 // Direction control for motor 1
+#define IN2 7 // Direction control for motor 1
 int motorSpeed = 128;
-void setup() {
+
+void setup()
+{
   pinMode(ENA, OUTPUT);
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
-  pinMode(ENB, OUTPUT);
-  pinMode(IN3, OUTPUT);
-  pinMode(IN4, OUTPUT);
   pinMode(A0, INPUT);
 
   Serial.begin(9600);
@@ -29,21 +25,18 @@ void loop()
 //  Serial.println(pot);
 //  Serial.println(motorSpeed);
 //  
-  // Motor 1: clockwise, Motor 2: counterclockwise
-  motorSpeed = 128;
+
+  motorSpeed = 255;
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);    
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
   analogWrite(ENA, motorSpeed); // Adjust speed as needed
+
   delay(2000);
 
-  motorSpeed = 128;
+  motorSpeed = 70;
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);  
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-  analogWrite(ENB, motorSpeed); // Adjust speed as needed
+  analogWrite(ENA, motorSpeed); // Adjust speed as needed
   
   delay(2000); // Wait for 2 seconds
 }
