@@ -42,3 +42,47 @@ void OmarMPU::readData()
   gyroY = (Wire.read() << 8 | Wire.read()) / 131.0;
   gyroZ = (Wire.read() << 8 | Wire.read()) / 131.0;
 }
+
+void OmarMPU::calculateAngles()
+{
+  // Switch on low pass filter (LPF)
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1A);
+  Wire.write(0x05);
+  Wire.endTransmission();
+
+  // Configure accelerometer settings
+  // Full scale range 0f +-8g
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1C);
+  Wire.write(0x10);
+  Wire.endTransmission();
+
+  // Get accelerometer values
+  Wire.beginTransmission(MPU);
+  Wire.write(0x3B);
+  Wire.endTransmission(); 
+  Wire.requestFrom(0x68,6);
+  accX = (Wire.read()<<8 | Wire.read()) / 4096.0;
+  accY = (Wire.read()<<8 | Wire.read()) / 4096.0;
+  accZ = (Wire.read()<<8 | Wire.read()) / 4096.0;
+
+  // Configure gyroscope output
+  Wire.beginTransmission(MPU);
+  Wire.write(0x1B); 
+  Wire.write(0x8);
+  Wire.endTransmission(); 
+
+  // Get gyrosopce values
+  Wire.beginTransmission(MPU);
+  Wire.write(0x43);
+  Wire.endTransmission();
+  Wire.requestFrom(0x68,6);
+  
+  gyroX= (Wire.read()<<8 | Wire.read()) / 65.5;
+  gyroY= (Wire.read()<<8 | Wire.read()) / 65.5;
+  gyroZ= (Wire.read()<<8 | Wire.read()) / 65.5;
+  
+  angleRoll=atan(accY/sqrt(accX*accX+accZ*accZ))*1/(3.142/180.0);
+  anglePitch=-atan(accX/sqrt(accY*accY+accZ*accZ))*1/(3.142/180.0);
+}
