@@ -29,7 +29,7 @@ function [accX, accY, accZ, gyroX, gyroY, gyroZ, time] = readSensorData(filename
             gyroZ = [gyroZ str2double(extractBetween(line, 'Gyro Z: ', ' Time:'))];
 
             % Extract time values
-            time = [time str2double(extractAfter(line, 'Time: '))/1e6];
+            time = [time str2double(extractAfter(line, 'Time: '))];
         end
     end
 end

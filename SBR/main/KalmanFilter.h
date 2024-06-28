@@ -1,26 +1,21 @@
-#ifndef KalmanFilter_h
-#define KalmanFilter_h
+#ifndef kalman_h
+#define kalman_h
 
-#if ARDUINO >= 100
 #include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
 
-class KalmanFilter
+class KalmanFilter2D
 {
-    public:
-
-	KalmanFilter(double angle = 0.001, double bias = 0.003, double measure = 0.03);
-	double update(double newValue, double newRate);
-
-    private:
-
-	double Q_angle, Q_bias, R_measure;
-	double K_angle, K_bias, K_rate;
-	double P[2][2], K[2];
-	double S, y;
-	double dt, kt;
+public:
+  KalmanFilter2D(double Q_a, double Q_b, double R_m);
+  double estimate(double Zn, double W);
+  
+private:
+  double Qa, Qb, R;
+  double Xa, Xb;
+  double Paa, Pab, Pba, Pbb, Ka, Kb; // Covariance matrix (2x2) and Kalman gain (2x1)
+  double Paa_temp, Pab_temp, Pba_temp, Pbb_temp;
+  double S, y;
+  double dt, kt;
 };
 
 #endif

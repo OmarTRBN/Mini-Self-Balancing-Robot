@@ -34,54 +34,35 @@ for i = 1:numel(time)
     kalmanRoll(i) = x(1);
 end
 
-% Kalman filter loop for only gyro 
-H = [0 1]; 
-R = 5; % Measurement noise covariance
-kalmanRollGyro = zeros(size(time));
-for i = 1:numel(time)
-    % Prediction
-    x = F * x;
-    P = F * P * F' + Q;
-
-    % Update
-    K = P * H' / (H * P * H' + R);
-    z = [gyroX(i)]; % Combined measurement of angle and angular velocity
-    x = x + K * (z - H * x);
-    P = (eye(2) - K * H) * P;
-
-    % Store the fused estimate
-    kalmanRollGyro(i) = x(1);
-end
-
-% Kalman filter loop for only gyro 
-H = [1 0]; 
-R = 5;
-kalmanRollAcc = zeros(size(time));
-for i = 1:numel(time)
-    % Prediction
-    x = F * x;
-    P = F * P * F' + Q;
-
-    % Update
-    K = P * H' / (H * P * H' + R);
-    z = [rollAcc(i)]; % Measurement of angle 
-    x = x + K * (z - H * x);
-    P = (eye(2) - K * H) * P;
-
-    % Store the fused estimate
-    kalmanRollAcc(i) = x(1);
-end
+% Kalman filter loop for only acc 
+% H = [1 0]; 
+% R = 5;
+% kalmanRollAcc = zeros(size(time));
+% for i = 1:numel(time)
+%     % Prediction
+%     x(2) = gyroX(i);
+%     x = F * x;
+%     P = F * P * F' + Q;
+% 
+%     % Update
+%     K = P * H' / (H * P * H' + R);
+%     z = [rollAcc(i)]; % Measurement of angle 
+%     x = x + K * (z - H * x);
+%     P = (eye(2) - K * H) * P;
+% 
+%     % Store the fused estimate
+%     kalmanRollAcc(i) = x(1);
+% end
 
 % Plot the data
 figure;
-plot(time, rollAcc, 'yellow', 'LineWidth', 1.5);
+plot(time, rollAcc, 'black--', 'LineWidth', 1.5);
 hold on;
-plot(time, rollGyro, 'g', 'LineWidth', 1.5);
-plot(time, kalmanRoll, 'b', 'LineWidth', 1.5);
-plot(time, kalmanRollGyro, 'm', 'LineWidth', 1.5);
-plot(time, kalmanRollAcc, 'r', 'LineWidth', 1.5);
+plot(time, rollGyro, 'blue', 'LineWidth', 1.5);
+plot(time, kalmanRoll, 'green', 'LineWidth', 1.5);
+% plot(time, kalmanRollAcc, 'r', 'LineWidth', 1.5);
 hold off;
 xlabel('Time');
 ylabel('Roll Angle (degrees)');
-legend('Accelerometer', 'Gyroscope', 'Kalman Filter Both', 'Kalman Gyro', 'Kalman Accelerometer');
+legend('Accelerometer', 'Gyroscope', 'Kalman Filter Both');
 title('Roll Angle Estimation using Kalman Filter');
