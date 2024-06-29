@@ -1,3 +1,5 @@
+// KalmanFilter.cpp
+
 #include "KalmanFilter.h"
 
 KalmanFilter2D::KalmanFilter2D(double Q_a, double Q_b, double R_m)
@@ -10,8 +12,8 @@ KalmanFilter2D::KalmanFilter2D(double Q_a, double Q_b, double R_m)
   Ka=0; Kb=0;
   
   // Covariance matrix (2x2 matrix)
-  Paa=0; Pab=0;
-  Pba=0; Pbb=0;
+  Paa=1; Pab=0;
+  Pba=0; Pbb=1;
 
   kt = double(micros()); // Convert micro second to second
 }

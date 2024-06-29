@@ -18,15 +18,18 @@ float accPitch = 0;
 float accRoll = 0;
 
 // Kalman Filter
-double Q_a=0.001, Q_b=0.003, R=0.05; 
-KalmanFilter2D kalmanPitch(Q_a, Q_b, R);
-double kalPitch = 0;
+//double Q_a_pitch=0.001, Q_b_pitch=0.003, R_pitch=0.05;
+//KalmanFilter2D kalmanPitch(Q_a_pitch, Q_b_pitch, R_pitch);
+//double kalPitch = 0; 
+double Q_a_roll=0.001, Q_b_roll=0.003, R_roll=0.02; 
+KalmanFilter2D kalmanRoll(Q_a_roll, Q_b_roll, R_roll);
 double kalRoll = 0;
 
 // PID Controller
-float pidError=0.0, prevPidError=0.0, integral=0.0, derivative=0.0, outputPID=0.0;
+float pidError=0.0, prevPidError=0.0, integral=0.0, derivative=0.0;
 const float Kp=2.5, Ki=0.0, Kd=0.0;
 unsigned long pidTimeNow=0, pidTimePrev=0; float deltaT=0.0;
+int outputPID=0;
 
 void setup() 
 {
@@ -37,7 +40,8 @@ void setup()
   pinMode(AIN2, OUTPUT);
   pinMode(AIN1, OUTPUT);
   pinMode(STBY, OUTPUT);
-  
+
+  digitalWrite(STBY, HIGH);
   Serial.begin(9600);
 
   // Initialize MPU6050
@@ -49,21 +53,21 @@ void loop()
   getValues(&accX, &accY, &accZ, &gyroX, &gyroY, &gyroZ);
   
   // Calculate Pitch & Roll from accelerometer (deg)
-  accPitch = (double) atan( (double)-accX / (double)sqrt(accY*accY + accZ*accZ) ) * 180.0/3.141593;
-  //  accRoll  = (double) atan( accY / (double)sqrt(accX*accX + accZ*accZ) ) * 180.0/3.141593;
+  //  accPitch = (double) atan( (double)-accX / (double)sqrt(accY*accY + accZ*accZ) ) * 180.0/3.141593;
+  accRoll  = (double) atan( (double)accY / sqrt(accX*accX + accZ*accZ) ) * 180.0/3.141593;
 
   // Kalman filter
-  kalPitch = kalmanPitch.estimate(accPitch, gyroY);
-  //  kalRoll = kalmanRoll.estimate(accRoll, gyroX);
+  //  kalPitch = kalmanPitch.estimate(accPitch, gyroY);
+  kalRoll = kalmanRoll.estimate(accRoll, gyroX);
   
   // PID Controller
   pidTimeNow = micros();
   deltaT = (float)(pidTimeNow-pidTimePrev)/1.0e6;
    
-  pidError = (float)kalPitch; // Proportional term
+  pidError = (float)kalRoll; // Proportional term
   integral += pidError*deltaT; // Integral term
   derivative = (float)(pidError-prevPidError)/deltaT; // Derivative term
-  outputPID = Kp*pidError + Ki*integral + Kd*derivative;
+  outputPID = (int) (Kp*pidError + Ki*integral + Kd*derivative);
 
   // Processing the PID output
   proccesOutput();
@@ -73,12 +77,12 @@ void loop()
   pidTimePrev=pidTimeNow;
 
   // Sending data
-  Serial.print("Control Input: ");
-  Serial.print(outputPID);
-//  Serial.print(", Kalman roll angle: ");
-//  Serial.print(kalRoll);
-  Serial.print(", Kalman pitch angle: ");
-  Serial.println(kalPitch);
+//  Serial.print("Control Input: ");
+//  Serial.print(outputPID);
+  Serial.print(", Kalman roll angle: ");
+  Serial.println(kalRoll);
+//  Serial.print(", Kalman pitch angle: ");
+//  Serial.println(kalPitch);
 }
 
 void proccesOutput()
