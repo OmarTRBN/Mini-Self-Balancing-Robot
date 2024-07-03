@@ -27,7 +27,7 @@ double kalRoll = 0;
 
 // PID Controller
 float pidError=0.0, prevPidError=0.0, prevPrevPidError=0.0, integral=0.0, derivative=0.0;
-const float Kp=25.5, Ki=150.0, Kd=1.5;
+const float Kp=25.5, Ki=315.3, Kd=0.7;
 unsigned long pidTimeNow=0, pidTimePrev=0; float deltaT=0.0;
 int outputPID=0;
 
@@ -63,8 +63,8 @@ void loop()
   // PID Controller
   pidTimeNow = micros();
   deltaT = (float)(pidTimeNow-pidTimePrev)/1.0e6;
-   
-  pidError = (float)kalRoll; // Proportional term
+
+  pidError = -2.5 - (float)kalRoll; // Proportional term
   integral += pidError*deltaT; // Integral term
   derivative = (float)(3*pidError-4*prevPidError+prevPrevPidError)/(2.0*deltaT); // Derivative term
   outputPID = (int) (Kp*pidError + Ki*integral + Kd*derivative);
@@ -90,7 +90,7 @@ void proccesOutput()
 {
   if (outputPID>0)
   {
-    moveBackward();
+    moveForward();
     if (outputPID>255)
     {
       outputPID=255;
@@ -99,7 +99,7 @@ void proccesOutput()
   else
   {
     outputPID=-outputPID;
-    moveForward();
+    moveBackward();
     if (outputPID>255)
     {
       outputPID=255;
